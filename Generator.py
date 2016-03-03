@@ -11,44 +11,46 @@ import numpy as np
 p = pyaudio.PyAudio()
 
 
-binaural=True
+binaural = True
 
 volume = 0.5     # range [0.0, 1.0]
 fs = 44100       # sampling rate, Hz, must be integer
 duration = 100.0   # in seconds, may be float
-fL = 220.0   
+fL = 220.0
 fR = 224    # sine frequency, Hz, may be float
 
 # generate samples, note conversion to float32 array
 samplesL = (np.sin(2*np.pi*np.arange(fs*duration)*fL/fs)).astype(np.float32)
 samplesR = (np.sin(2*np.pi*np.arange(fs*duration)*fR/fs)).astype(np.float32)
 
-samples=np.zeros(fs*duration*2).astype(np.float32)
+samples = np.zeros(fs*duration*2).astype(np.float32)
 
-#Monaural
+# Monaural
 
 if not binaural:
-    samples=samplesL+samplesR
+    samples = samplesL + samplesR
 
 # for paFloat32 sample values must be in range [-1.0, 1.0]
-    stream = p.open(format=pyaudio.paFloat32,
-                channels=1,
-                rate=fs,
-                output=True)
+    stream = p.open(
+        format=pyaudio.paFloat32,
+        channels=1,
+        rate=fs,
+        output=True)
 
-#Binaural
+# Binaural
 else:
-    samples[::2]=samplesL
-    samples[1::2]=samplesR
+    samples[::2] = samplesL
+    samples[1::2] = samplesR
 
 
 # for paFloat32 sample values must be in range [-1.0, 1.0]
-    stream = p.open(format=pyaudio.paFloat32,
-                channels=2,
-                rate=fs,
-                output=True)
+    stream = p.open(
+        format=pyaudio.paFloat32,
+        channels=2,
+        rate=fs,
+        output=True)
 
-# play. May repeat with different volume values (if done interactively) 
+# play. May repeat with different volume values (if done interactively)
 stream.write(volume*samples)
 
 stream.stop_stream()
